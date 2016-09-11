@@ -82,14 +82,10 @@ def PrintHostInfo(host):
 
    TODO: cluster
    """
-   print dir(host)
    print host.host
    print host.name
    print host.summary
    print host.network
-   
-   print dir(host.host[0])
-   print host.host[0].vm
 
 
 def main():
@@ -116,13 +112,16 @@ def main():
    atexit.register(Disconnect, si)
 
    content = si.RetrieveContent()
+
+   # Method 1
+
    for child in content.rootFolder.childEntity:
-      #if hasattr(child, 'vmFolder'):
-      #   datacenter = child
-      #   vmFolder = datacenter.vmFolder
-      #   vmList = vmFolder.childEntity
-      #   for vm in vmList:
-      #      PrintVmInfo(vm)
+      if hasattr(child, 'vmFolder'):
+         datacenter = child
+         vmFolder = datacenter.vmFolder
+         vmList = vmFolder.childEntity
+         for vm in vmList:
+            PrintVmInfo(vm)
       
       if hasattr(child, 'hostFolder'):
          datacenter = child
@@ -130,7 +129,22 @@ def main():
          hostList = hostFolder.childEntity
          for host in hostList:
             PrintHostInfo(host)
-            print "=========================>"
+
+   # Method 2
+
+   container = content.viewManager.CreateContainerView(
+           content.rootFolder, [vim.HostSystem], True)
+   for host in container.view:
+      print host.name
+      print host.summary.config
+      #print host.summary.host.config
+
+   container = content.viewManager.CreateContainerView(
+           content.rootFolder, [vim.VirtualMachine], True)
+   for vm in container.view:
+       print vm.name
+       print vm.summary.config
+
    return 0
 
 # Start program
