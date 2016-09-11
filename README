@@ -6,3 +6,4 @@ Operations:
 How to:
 
 1. call pyvmomi SDK
+2. call pysphere API
